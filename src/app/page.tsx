@@ -1,103 +1,235 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from "react"
+
+import {
+  Star,
+  MessageCircle,
+} from "lucide-react"
+import { supabaseClient } from "@/lib/supabaseClient"
+import Navbar from "@/app/components/Navbar"
+import TitleSlideShow from "./components/title-slideshow"
+import Footer from "./components/Footer"
+import ProductCarousel from "./components/section/ProductCarousel"
+import HoverDescription from "./components/section/HoverDescription"
+
+interface Product {
+  id: string
+  brand: string
+  model: string
+  images: string[]
+  price: string
+  description: string
+  telegram_link: string
+  featured: boolean
+  created_at: string
+}
+
+interface Translations {
+  heading: string
+  subheading: string
+  features: string[]
+  featured: string
+  allProducts: string
+  buyNow: string
+  slideshowText: string
+  footer: {
+    description: string
+    customDesign: string
+    customDesignSub: string
+    easyInstallation: string
+    easyInstallationSub: string
+    premiumMaterials: string
+    premiumMaterialsSub: string
+    flexiblePayment: string
+    flexiblePaymentSub: string
+    contactButton: string
+    copyright: string
+  }
+}
+
+function ProductCard({ product, language, translations }: { product: Product; language: string; translations: Translations }) {
+  const handleBuyNow = () => {
+    const message = encodeURIComponent(`I'm interested in buying the ${product.brand} ${product.model} for ${product.price}. Please provide more details.`)
+    window.open(`${product.telegram_link}?text=${message}`, "_blank")
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
+      <div className="p-4">
+          <ProductCarousel 
+              images={product.images} 
+              translations={{
+                noImages: "No images",
+                prevImage: "Previous image",
+                nextImage: "Next image"
+              }} 
+          />
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs bg-gray-50 text-gray-600 px-2 py-1 uppercase rounded ring-1 ring-inset ring-gray-500/10">{product.brand}</span>
+            {product.featured && (
+              <span className="text-xs bg-yellow-50 text-yellow-800 px-2 py-1 rounded ring-1 ring-inset ring-yellow-600/20 flex items-center">
+                <Star className="w-3 h-3 mr-1" /> Featured
+              </span>
+            )}
+          </div>
+          <h3 className="font-semibold text-lg text-gray-900">{product.model}</h3>
+          <HoverDescription description={product.description} />
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-2xl font-bold text-[#fcac4c]">${product.price}</span>
+            <button
+              onClick={handleBuyNow}
+              className="bg-[#fcac4c] text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-orange-600 inline-flex items-center gap-1"
+            >
+              <MessageCircle className="w-4 h-4" />
+              {translations.buyNow}
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
-  );
+  )
+}
+
+export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [selectedBrand, setSelectedBrand] = useState("All")
+  const [language, setLanguage] = useState<"en" | "kh" | "zh">("en")
+  const [translations, setTranslations] = useState<Translations | null>(null)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabaseClient
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) {
+        console.error(error)
+      }
+      if (data) {
+        setProducts(data)
+        setFilteredProducts(data) // Initialize filtered products
+      }
+    }
+    fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      try {
+        const res = await fetch(`/locales/${language}.json`)
+        const data = await res.json()
+        setTranslations(data)
+      } catch (error) {
+        console.error("Failed to load translations", error)
+      }
+    }
+    fetchTranslations()
+  }, [language])
+
+  const handleSearch = (query: string) => {
+    const lowerQuery = query.toLowerCase()
+    const filtered = products.filter(
+      (product) =>
+        product.brand.toLowerCase().includes(lowerQuery) ||
+        product.model.toLowerCase().includes(lowerQuery) ||
+        product.price.toLowerCase().includes(lowerQuery)
+    )
+    setFilteredProducts(filtered)
+  }
+
+  if (!translations) return <div className="text-center p-10">Loading translations...</div>
+
+  const brands = ["All", ...Array.from(new Set(products.map((p) => p.brand)))]
+  const displayProducts = selectedBrand === "All" ? filteredProducts : filteredProducts.filter((p) => p.brand === selectedBrand)
+  const featuredProducts = filteredProducts.filter((p) => p.featured).slice(0, 3)
+
+  return (
+    <div className="min-h-screen bg-[#efefef] pt-20">
+      <Navbar language={language} setLanguage={setLanguage} onSearch={handleSearch} />
+      
+      <TitleSlideShow translations={{ slideshowText: translations.slideshowText }} />
+
+      <section className="bg-[#efefef] text-[#fcac4c] py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">{translations.heading}</h2>
+          <p className="text-xl md:text-2xl mb-8">{translations.subheading}</p>
+          <div className="flex flex-nowrap justify-center gap-4 overflow-x-auto scrollbar-hide">
+            {translations.features.map((feature, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center rounded-md bg-[#fcac4c] md:px-4 md:py-2 px-2 py-1 md:text-lg text-sm font-medium text-white"
+              >
+                {feature}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {featuredProducts.length > 0 && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+              {translations.featured}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  language={language}
+                  translations={translations}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="py-8 bg-[#efefef]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-2">
+            {brands.map((brand) => (
+              <button
+                key={brand}
+                onClick={() => setSelectedBrand(brand)}
+                className={`px-3 py-2 rounded-md text-sm uppercase font-semibold shadow-sm ${
+                  selectedBrand === brand
+                    ? "bg-[#fcac4c] text-white"
+                    : "bg-white text-gray-900 ring-1 ring-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {brand}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-[#efefef] ">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">
+            {selectedBrand === "All"
+              ? translations.allProducts
+              : `${selectedBrand} ${translations.allProducts}`}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                language={language}
+                translations={translations}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer translations={translations} />
+    </div>
+  )
 }
