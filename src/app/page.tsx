@@ -48,7 +48,7 @@ interface Translations {
   }
 }
 
-function ProductCard({ product, language, translations }: { product: Product; language: string; translations: Translations }) {
+function ProductCard({ product, translations }: { product: Product; language: string; translations: Translations }) {
   const handleBuyNow = () => {
     const message = encodeURIComponent(`I'm interested in buying the ${product.brand} ${product.model} for ${product.price}. Please provide more details.`)
     window.open(`${product.telegram_link}?text=${message}`, "_blank")
@@ -77,7 +77,7 @@ function ProductCard({ product, language, translations }: { product: Product; la
           <h3 className="font-semibold text-lg text-gray-900">{product.model}</h3>
           <HoverDescription description={product.description} />
           <div className="flex items-center justify-between pt-2">
-            <span className="text-2xl font-bold text-[#fcac4c]">${product.price}</span>
+            <span className="text-2xl font-bold text-[#fcac4c]">${Number(product.price).toLocaleString()}</span>
             <button
               onClick={handleBuyNow}
               className="bg-[#fcac4c] text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-orange-600 inline-flex items-center gap-1"
