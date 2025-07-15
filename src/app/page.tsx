@@ -167,15 +167,21 @@ export default function HomePage() {
       
       <TitleSlideShow translations={{ slideshowText: translations.slideshowText }} />
 
-      <section className="bg-[#efefef] text-[#fcac4c] py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">{translations.heading}</h2>
-          <p className="text-xl md:text-2xl mb-8">{translations.subheading}</p>
+      <section className="bg-[#efefef] py-12">
+        <div className="container mx-auto px-4 text-center space-y-6">
+          <h2 className="text-4xl text-[#fcac4c] md:text-6xl font-bold">
+            {translations.heading}
+          </h2>
+
+          <p className="text-xl text-gray-900 md:text-2xl">
+            {translations.subheading}
+          </p>
+
           <div className="flex flex-nowrap justify-center gap-4 overflow-x-auto scrollbar-hide">
             {translations.features.map((feature, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center rounded-md bg-[#fcac4c] md:px-4 md:py-2 px-2 py-1 md:text-lg text-sm font-medium text-white"
+                className="inline-flex items-center rounded-md bg-[#efefef] md:px-4 md:py-2 px-2 py-1 md:text-lg text-sm font-medium text-gray-500"
               >
                 {feature}
               </span>
@@ -187,7 +193,7 @@ export default function HomePage() {
       {featuredProducts.length > 0 && (
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+            <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">
               {translations.featured}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -257,3 +263,5 @@ export default function HomePage() {
     </div>
   )
 }
+
+

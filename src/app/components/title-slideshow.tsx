@@ -1,4 +1,7 @@
+
 "use client";
+
+import { useEffect, useState } from "react";
 
 interface TitleSlideShowProps {
   translations: {
@@ -7,18 +10,33 @@ interface TitleSlideShowProps {
 }
 
 export default function TitleSlideShow({ translations }: TitleSlideShowProps) {
-  const clients = Array(8).fill({ name: translations.slideshowText }); // repeat it 8 times for smooth scrolling
+  const [repeatCount, setRepeatCount] = useState(12); // Default for large screens
+
+  useEffect(() => {
+    const updateRepeatCount = () => {
+      const screenWidth = window.innerWidth;
+      const textLength = translations.slideshowText.length;
+      const baseRepeat = Math.ceil((screenWidth * 2) / (textLength * 24)); // 24px = approx width per char
+      setRepeatCount(Math.max(baseRepeat, 8));
+    };
+
+    updateRepeatCount();
+    window.addEventListener("resize", updateRepeatCount);
+    return () => window.removeEventListener("resize", updateRepeatCount);
+  }, [translations.slideshowText]);
+
+  const clients = Array(repeatCount).fill(translations.slideshowText);
 
   return (
     <section className="py-2 bg-[#fcac4c]">
       <div className="overflow-hidden whitespace-nowrap">
         <div className="flex space-x-4 animate-scroll">
-          {clients.map((client, idx) => (
+          {clients.map((text, idx) => (
             <div
-              key={`${client.name}-${idx}`}
-              className="inline-block flex-shrink-0 text-white text-xl font-bold px-2"
+              key={`${text}-${idx}`}
+              className="inline-block flex-shrink-0 text-white text-xl px-2"
             >
-              {client.name}
+              {text}
             </div>
           ))}
         </div>

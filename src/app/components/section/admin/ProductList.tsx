@@ -78,7 +78,6 @@ export default function ProductList({
                 )}
               </div>
               <h4 className="text-lg font-semibold text-gray-900">{product.model}</h4>
-              {/* <p className="text-sm text-gray-700 flex-grow">{product.description}</p> */}
               <HoverDescription description={product.description}/>
               <div className="mt-2 text-[#fcac4c] font-semibold">${Number(product.price).toLocaleString()}</div>
 

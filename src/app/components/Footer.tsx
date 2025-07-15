@@ -3,7 +3,8 @@
 "use client";
 
 import Image from "next/image";
-import { MessageCircle, CreditCard, Car, Settings, Shield } from "lucide-react";
+import { CreditCard, Car, Settings, Shield } from "lucide-react";
+import { FaTelegramPlane, FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 
 interface FooterProps {
   translations: {
@@ -33,7 +34,7 @@ export default function Footer({ translations }: FooterProps) {
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Image
-              src="/Brand-Lover-Logo_1.jpg"
+              src="/Brand-Lover-Logo_black.jpg"
               alt="Brand Lover Logo"
               width={40}
               height={40}
@@ -74,17 +75,51 @@ export default function Footer({ translations }: FooterProps) {
             © {new Date().getFullYear()} Brand Lover. {t.copyright}
           </p>
 
-          <a
-          href="https://t.me/brandlover88" // <-- update this to your actual link
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-md border border-gray-600 bg-transparent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800"
-        >
-          <MessageCircle className="w-4 h-4" />
-          {t.contactButton}
-        </a>
+          {/* Social media icons */}
+          <div className="flex gap-4">
+            <a
+              href="https://t.me/brandlover88"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#fcac4c] transition"
+              aria-label="Telegram"
+            >
+              <FaTelegramPlane className="w-5 h-5" />
+            </a>
+            <a
+              href="https://facebook.com/brandlover89"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#fcac4c] transition"
+              aria-label="Facebook"
+            >
+              <FaFacebookF className="w-5 h-5" />
+            </a>
+            <a
+              href="https://www.instagram.com/brandlover16"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#fcac4c] transition"
+              aria-label="Instagram"
+            >
+              <FaInstagram className="w-5 h-5" />
+            </a>
+            <a
+              href="https://www.tiktok.com/@brandlover89"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#fcac4c] transition"
+              aria-label="TikTok"
+            >
+              <FaTiktok className="w-5 h-5" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
+
+
+
+

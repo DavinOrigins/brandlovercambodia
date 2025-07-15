@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-400">
+    <div className="min-h-screen flex items-center justify-center bg-[#fcac4c]">
       <div className="w-full max-w-md px-6">
         <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-8">
           {/* Branding with PNG icon */}
@@ -39,7 +39,7 @@ export default function LoginPage() {
               height={28}
               className="rounded-sm"
             />
-            <h1 className="text-2xl font-bold text-orange-400">Brand Lover</h1>
+            <h1 className="text-2xl font-bold text-[#fcac4c]">Brand Lover</h1>
           </div>
 
           <h2 className="text-lg font-semibold text-center text-gray-700 mb-4">Admin Login</h2>
@@ -83,7 +83,7 @@ export default function LoginPage() {
             </button>
 
             <div className="text-center mt-4">
-              <Link href="/" className="text-sm text-orange-400 hover:underline">
+              <Link href="/" className="text-sm text-[#fcac4c] hover:underline">
                 Back to Homepage
               </Link>
             </div>
