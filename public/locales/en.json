@@ -68,6 +68,7 @@
     "placeholderPrice": "e.g., $999",
     "placeholderTelegram": "https://t.me/username",
     "placeholderDescription": "Describe the product..."
-  }
+  },
+  "noProductsFound": "No products found matching your search criteria."
 }
 

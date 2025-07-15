@@ -68,5 +68,6 @@
     "placeholderPrice": "例如：¥999",
     "placeholderTelegram": "https://t.me/username",
     "placeholderDescription": "描述产品..."
-  }
+  },
+  "noProductsFound": "没有找到符合您搜索条件的产品。"
 }
