@@ -582,10 +582,9 @@
 // }
 
 
-
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import imageCompression from "browser-image-compression";
 import Navbar from "../components/Navbar";
@@ -671,7 +670,6 @@ export default function AdminPage() {
     featured: false,
   });
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const [lastActivity, setLastActivity] = useState(Date.now());
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [deletePopupId, setDeletePopupId] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -679,31 +677,6 @@ export default function AdminPage() {
   const [currentFileIndex, setCurrentFileIndex] = useState<number>(0);
   const [totalFiles, setTotalFiles] = useState<number>(0);
   const productFormRef = useRef<HTMLDivElement>(null);
-
-  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
-
-  const handleLogout = useCallback(async () => {
-    try {
-      const { error } = await supabaseClient.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error.message);
-        setNotification({ 
-          message: `${translations?.logout || "Logout failed:"} ${error.message}`, 
-          type: "error" 
-        });
-        return;
-      }
-      setProducts([]);
-      setFilteredProducts([]);
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Unexpected logout error:", error);
-      setNotification({ 
-        message: translations?.logout || "An unexpected error occurred during logout", 
-        type: "error" 
-      });
-    }
-  }, [translations]);
 
   useEffect(() => {
     const fetchTranslations = async () => {
@@ -717,31 +690,6 @@ export default function AdminPage() {
     };
     fetchTranslations();
   }, [language]);
-
-  useEffect(() => {
-    const activities = ["mousedown", "keydown", "scroll", "touchstart"];
-    const updateActivity = () => setLastActivity(Date.now());
-
-    activities.forEach((event) => {
-      window.addEventListener(event, updateActivity);
-    });
-
-    return () => {
-      activities.forEach((event) => {
-        window.removeEventListener(event, updateActivity);
-      });
-    };
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Date.now() - lastActivity > SESSION_TIMEOUT) {
-        handleLogout();
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [lastActivity, SESSION_TIMEOUT, handleLogout]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -834,6 +782,31 @@ export default function AdminPage() {
     setFilteredProducts(filtered);
   };
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) {
+        console.error("Logout error:", error.message);
+        setNotification({ 
+          message: `${translations?.logout || "Logout failed:"} ${error.message}`, 
+          type: "error" 
+        });
+        return;
+      }
+      // Clear any local state
+      setProducts([]);
+      setFilteredProducts([]);
+      // Force a hard redirect to ensure all auth state is cleared
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Unexpected logout error:", error);
+      setNotification({ 
+        message: translations?.logout || "An unexpected error occurred during logout", 
+        type: "error" 
+      });
+    }
+  };
+
   const handleAddProductAction = async () => {
     if (!newProduct.brand || !newProduct.model || !newProduct.price || newProduct.images.length === 0) {
       setNotification({ message: translations?.fillRequired || "Please fill in all required fields including at least one image", type: "error" });
@@ -856,11 +829,49 @@ export default function AdminPage() {
 
   const handleUpdateProductAction = async () => {
     if (!newProduct.brand || !newProduct.model || !newProduct.price || newProduct.images.length === 0 || !editingProductId) {
-      setNotification({ message: translations?.fillRequired || "Please fill in all required fields including at least one image", type: "error" });
+      setNotification({
+        message: translations?.fillRequired || "Please fill in all required fields including at least one image",
+        type: "error"
+      });
       return;
     }
 
-    const product: Partial<Product> = {
+    const existingProduct = products.find(p => p.id === editingProductId);
+    if (!existingProduct) {
+      setNotification({ message: translations?.updateFail || "Original product not found", type: "error" });
+      return;
+    }
+
+    // 1. Detect removed images
+    const removedImages = existingProduct.images.filter(
+      (img) => !newProduct.images.includes(img)
+    );
+
+    // 2. Prepare paths from public URLs
+    const filePathsToDelete = removedImages.map((url) => {
+      const pathStart = url.indexOf("/product-images/") + "/product-images/".length;
+      return decodeURIComponent(url.substring(pathStart));
+    });
+
+    // 3. Delete removed images from storage
+    if (filePathsToDelete.length > 0) {
+      const { error: deleteError } = await supabaseClient
+        .storage
+        .from("product-images")
+        .remove(filePathsToDelete);
+
+      if (deleteError) {
+        console.error("Error deleting removed images:", deleteError.message);
+        setNotification({
+          message: `${translations?.deleteFail || "Failed to delete removed images:"} ${deleteError.message}`,
+          type: "error"
+        });
+        // You can still proceed if you want to allow partial success
+      }
+    }
+
+    // 4. Proceed with DB update
+    const updatedData: Partial<Product> = {
       brand: newProduct.brand,
       model: newProduct.model,
       images: newProduct.images,
@@ -872,38 +883,83 @@ export default function AdminPage() {
 
     const { error } = await supabaseClient
       .from("products")
-      .update(product)
+      .update(updatedData)
       .eq("id", editingProductId);
 
     if (error) {
       console.error("Error updating product:", error.message);
-      setNotification({ message: `${translations?.updateFail || "Failed to update product:"} ${error.message}`, type: "error" });
+      setNotification({
+        message: `${translations?.updateFail || "Failed to update product:"} ${error.message}`,
+        type: "error"
+      });
       return;
     }
 
+    // 5. Update local state
     setProducts((prev) =>
-      prev.map((p) => (p.id === editingProductId ? { ...p, ...product } : p))
+      prev.map((p) => (p.id === editingProductId ? { ...p, ...updatedData } : p))
     );
     setFilteredProducts((prev) =>
-      prev.map((p) => (p.id === editingProductId ? { ...p, ...product } : p))
+      prev.map((p) => (p.id === editingProductId ? { ...p, ...updatedData } : p))
     );
     resetForm();
-    setNotification({ message: translations?.updateSuccess || "Product updated successfully", type: "success" });
+    setNotification({
+      message: translations?.updateSuccess || "Product updated successfully",
+      type: "success"
+    });
   };
+
 
   const handleDeleteProductAction = async (id: string) => {
-    const { error } = await supabaseClient.from("products").delete().eq("id", id);
-    if (error) {
-      console.error("Error deleting product:", error.message);
-      setNotification({ message: `${translations?.deleteFail || "Failed to delete product:"} ${error.message}`, type: "error" });
-      return;
-    }
+    const productToDelete = products.find(p => p.id === id);
+    if (!productToDelete) return;
 
-    setProducts(products.filter((p) => p.id !== id));
-    setFilteredProducts(filteredProducts.filter((p) => p.id !== id));
-    setNotification({ message: translations?.deleteSuccess || "Product deleted successfully", type: "success" });
-    setDeletePopupId(null);
+    try {
+      // Extract file paths from public URLs
+      const filePaths = productToDelete.images.map(url => {
+        const pathStart = url.indexOf("/product-images/") + "/product-images/".length;
+        return decodeURIComponent(url.substring(pathStart));
+      });
+
+      // Delete from Supabase Storage
+      const { error: storageError } = await supabaseClient.storage
+        .from("product-images")
+        .remove(filePaths);
+
+      if (storageError) {
+        console.error("Storage delete error:", storageError.message);
+        setNotification({
+          message: `${translations?.deleteFail || "Failed to delete product images:"} ${storageError.message}`,
+          type: "error"
+        });
+        // Proceed with deletion anyway if you want
+      }
+
+      // Delete from database
+      const { error: dbError } = await supabaseClient.from("products").delete().eq("id", id);
+
+      if (dbError) {
+        console.error("DB delete error:", dbError.message);
+        setNotification({ 
+          message: `${translations?.deleteFail || "Failed to delete product:"} ${dbError.message}`, 
+          type: "error" 
+        });
+        return;
+      }
+
+      setProducts(products.filter((p) => p.id !== id));
+      setFilteredProducts(filteredProducts.filter((p) => p.id !== id));
+      setNotification({ message: translations?.deleteSuccess || "Product deleted successfully", type: "success" });
+      setDeletePopupId(null);
+    } catch (err) {
+      console.error("Unexpected delete error:", err);
+      setNotification({ 
+        message: translations?.deleteFail || "Unexpected error during deletion", 
+        type: "error" 
+      });
+    }
   };
+
 
   const handleImageUploadAction = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -1123,7 +1179,7 @@ export default function AdminPage() {
 
         <ProductList
           products={filteredProducts}
-          // handleDeleteProductAction={handleDeleteProductAction}
+          handleDeleteProductAction={handleDeleteProductAction}
           startEditingAction={startEditingAction}
           showDeletePopup={showDeletePopup}
           translations={{
@@ -1162,3 +1218,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+
