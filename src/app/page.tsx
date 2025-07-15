@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -14,6 +15,7 @@ interface Product {
   id: string
   brand: string
   model: string
+  title: string // Added title field
   images: string[]
   price: string
   description: string
@@ -48,20 +50,22 @@ interface Translations {
 
 function ProductCard({ product, translations }: { product: Product; language: string; translations: Translations }) {
   const handleBuyNow = () => {
-    const message = encodeURIComponent(`I'm interested in buying the ${product.brand} ${product.model} for ${product.price}. Please provide more details.`)
+    const message = encodeURIComponent(
+      `I'm interested in buying the ${product.title} (${product.brand} ${product.model}) for ${product.price}. Please provide more details.`,
+    )
     window.open(`${product.telegram_link}?text=${message}`, "_blank")
   }
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
       <div className="p-4">
-        <ProductCarousel 
-          images={product.images} 
+        <ProductCarousel
+          images={product.images}
           translations={{
             noImages: "No images",
             prevImage: "Previous image",
-            nextImage: "Next image"
-          }} 
+            nextImage: "Next image",
+          }}
         />
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
@@ -74,7 +78,8 @@ function ProductCard({ product, translations }: { product: Product; language: st
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-lg text-gray-900">{product.model}</h3>
+          <h3 className="font-semibold text-lg text-gray-900">{product.title}</h3> {/* Display product title */}
+          <p className="text-sm text-gray-600">{product.model}</p> {/* Keep model as a subtitle */}
           <HoverDescription description={product.description} />
           <div className="flex items-center justify-between pt-2">
             <span className="text-2xl font-bold text-[#fcac4c]">${Number(product.price).toLocaleString()}</span>
@@ -108,9 +113,9 @@ export default function HomePage() {
           .from("products")
           .select("*")
           .order("created_at", { ascending: false })
-        
+
         if (error) throw error
-        
+
         setProducts(data || [])
         setFilteredProducts(data || [])
       } catch (error) {
@@ -142,7 +147,8 @@ export default function HomePage() {
       (product) =>
         product.brand.toLowerCase().includes(lowerQuery) ||
         product.model.toLowerCase().includes(lowerQuery) ||
-        product.price.toLowerCase().includes(lowerQuery)
+        product.title.toLowerCase().includes(lowerQuery) || // Search by title
+        product.price.toLowerCase().includes(lowerQuery),
     )
     setFilteredProducts(filtered)
   }
@@ -156,26 +162,21 @@ export default function HomePage() {
   }
 
   const brands = ["All", ...Array.from(new Set(products.map((p) => p.brand)))]
-  const displayProducts = selectedBrand === "All" 
-    ? filteredProducts 
-    : filteredProducts.filter((p) => p.brand === selectedBrand)
+  const displayProducts =
+    selectedBrand === "All" ? filteredProducts : filteredProducts.filter((p) => p.brand === selectedBrand)
   const featuredProducts = filteredProducts.filter((p) => p.featured).slice(0, 3)
 
   return (
     <div className="min-h-screen bg-[#efefef] pt-20">
       <Navbar language={language} setLanguage={setLanguage} onSearch={handleSearch} />
-      
+
       <TitleSlideShow translations={{ slideshowText: translations.slideshowText }} />
 
       <section className="bg-[#efefef] py-12">
         <div className="container mx-auto px-4 text-center space-y-6">
-          <h2 className="text-4xl text-[#fcac4c] md:text-6xl font-bold">
-            {translations.heading}
-          </h2>
+          <h2 className="text-4xl text-[#fcac4c] md:text-6xl font-bold">{translations.heading}</h2>
 
-          <p className="text-xl text-gray-900 md:text-2xl">
-            {translations.subheading}
-          </p>
+          <p className="text-xl text-gray-900 md:text-2xl">{translations.subheading}</p>
 
           <div className="flex flex-nowrap justify-center gap-4 overflow-x-auto scrollbar-hide">
             {translations.features.map((feature, idx) => (
@@ -193,17 +194,10 @@ export default function HomePage() {
       {featuredProducts.length > 0 && (
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">
-              {translations.featured}
-            </h2>
+            <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">{translations.featured}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  language={language}
-                  translations={translations}
-                />
+                <ProductCard key={product.id} product={product} language={language} translations={translations} />
               ))}
             </div>
           </div>
@@ -233,26 +227,17 @@ export default function HomePage() {
       <section className="py-16 bg-[#efefef]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">
-            {selectedBrand === "All"
-              ? translations.allProducts
-              : `${selectedBrand} ${translations.allProducts}`}
+            {selectedBrand === "All" ? translations.allProducts : `${selectedBrand} ${translations.allProducts}`}
           </h2>
-          
+
           {displayProducts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl text-gray-500 mb-4">
-                {translations.noProductsFound}
-              </p>
+              <p className="text-xl text-gray-500 mb-4">{translations.noProductsFound}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  language={language}
-                  translations={translations}
-                />
+                <ProductCard key={product.id} product={product} language={language} translations={translations} />
               ))}
             </div>
           )}
@@ -263,5 +248,3 @@ export default function HomePage() {
     </div>
   )
 }
-
-

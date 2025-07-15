@@ -48,6 +48,7 @@
     "updateProduct": "更新产品",
     "brand": "品牌",
     "model": "型号",
+    "title": "标题",
     "price": "价格",
     "telegramLink": "Telegram 链接",
     "description": "描述",
@@ -65,6 +66,7 @@
     "delete": "删除",
     "placeholderBrand": "例如：宝马, 奔驰",
     "placeholderModel": "例如：3系内饰",
+    "placeholderTitle": "输入产品标题",
     "placeholderPrice": "例如：¥999",
     "placeholderTelegram": "https://t.me/username",
     "placeholderDescription": "描述产品..."

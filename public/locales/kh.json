@@ -48,6 +48,7 @@
     "updateProduct": "ធ្វើបច្ចុប្បន្នភាពផលិតផល",
     "brand": "ម៉ាក",
     "model": "ម៉ូដែល",
+    "title": "ចំណងជើង",
     "price": "តម្លៃ",
     "telegramLink": "តំណភ្ជាប់ Telegram",
     "description": "ការពិពណ៌នា",
@@ -65,6 +66,7 @@
     "delete": "លុប",
     "placeholderBrand": "ឧ. BMW, Mercedes",
     "placeholderModel": "ឧ. 3 Series Interior",
+    "placeholderTitle": "បញ្ចូលចំណងជើងផលិតផល",
     "placeholderPrice": "ឧ. $999",
     "placeholderTelegram": "https://t.me/username",
     "placeholderDescription": "ពិពណ៌នាអំពីផលិតផល..."

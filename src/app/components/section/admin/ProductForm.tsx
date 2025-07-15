@@ -1,64 +1,69 @@
 
 
+"use client"
 
-"use client";
+import type React from "react"
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Save, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import { Save, Trash2 } from "lucide-react"
 
 interface Product {
-  id: string;
-  brand: string;
-  model: string;
-  images: string[];
-  price: string;
-  description: string;
-  telegram_link: string;
-  featured: boolean;
+  id: string
+  brand: string
+  model: string
+  title: string
+  images: string[]
+  price: string
+  description: string
+  telegram_link: string
+  featured: boolean
+  created_at: string // Added created_at to match app/admin/page.tsx
 }
 
 interface ProductFormProps {
-  newProduct: Omit<Product, "id">;
-  setNewProductAction: (value: (prev: Omit<Product, "id">) => Omit<Product, "id">) => void;
-  isAddingProduct: boolean;
-  setIsAddingProductAction: (value: boolean) => void;
-  handleAddProductAction: () => Promise<void>;
-  handleImageUploadAction: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  removeImageAction: (index: number) => void;
-  handleUpdateProductAction?: () => Promise<void>;
-  resetFormAction: () => void;
-  originalProduct: Product | null;
+  newProduct: Omit<Product, "id">
+  setNewProductAction: (value: (prev: Omit<Product, "id">) => Omit<Product, "id">) => void
+  isAddingProduct: boolean
+  setIsAddingProductAction: (value: boolean) => void
+  handleAddProductAction: () => Promise<void>
+  handleImageUploadAction: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
+  removeImageAction: (index: number) => void
+  handleUpdateProductAction?: () => Promise<void>
+  resetFormAction: () => void
+  originalProduct: Product | null
   translations: {
-    newProduct: string;
-    updateProduct: string;
-    brand: string;
-    model: string;
-    price: string;
-    telegramLink: string;
-    description: string;
-    images: string;
-    imageRequired: string;
-    featuredProduct: string;
-    saveProduct: string;
-    updateProductButton: string;
-    cancel: string;
-    placeholderBrand: string;
-    placeholderModel: string;
-    placeholderPrice: string;
-    placeholderTelegram: string;
-    placeholderDescription: string;
-  };
-  uploadProgress?: number;
-  isUploading?: boolean;
-  currentFileIndex?: number;
-  totalFiles?: number;
+    newProduct: string
+    updateProduct: string
+    brand: string
+    model: string
+    title: string
+    price: string
+    telegramLink: string
+    description: string
+    images: string
+    imageRequired: string
+    featuredProduct: string
+    saveProduct: string
+    updateProductButton: string
+    cancel: string
+    placeholderBrand: string
+    placeholderModel: string
+    placeholderTitle: string
+    placeholderPrice: string
+    placeholderTelegram: string
+    placeholderDescription: string
+  }
+  uploadProgress?: number
+  isUploading?: boolean
+  currentFileIndex?: number
+  totalFiles?: number
 }
 
 const arraysEqual = (a: string[], b: string[]) => {
-  if (a.length !== b.length) return false;
-  return a.every((item, index) => item === b[index]);
-};
+  if (a.length !== b.length) return false
+  return a.every((item, index) => item === b[index])
+}
 
 export default function ProductForm({
   newProduct,
@@ -74,37 +79,38 @@ export default function ProductForm({
   uploadProgress = 0,
   isUploading = false,
   currentFileIndex = 0,
-  totalFiles = 0
+  totalFiles = 0,
 }: ProductFormProps) {
-  const [hasChanges, setHasChanges] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false)
 
   useEffect(() => {
     if (originalProduct) {
       const hasChanged =
         newProduct.brand !== originalProduct.brand ||
         newProduct.model !== originalProduct.model ||
+        newProduct.title !== originalProduct.title ||
         newProduct.price !== originalProduct.price ||
         newProduct.description !== originalProduct.description ||
         newProduct.telegram_link !== originalProduct.telegram_link ||
         newProduct.featured !== originalProduct.featured ||
-        !arraysEqual(newProduct.images, originalProduct.images);
+        !arraysEqual(newProduct.images, originalProduct.images)
 
-      setHasChanges(hasChanged && newProduct.images.length > 0);
+      setHasChanges(hasChanged && newProduct.images.length > 0)
     } else {
-      setHasChanges(newProduct.images.length > 0);
+      setHasChanges(newProduct.images.length > 0)
     }
-  }, [newProduct, originalProduct]);
+  }, [newProduct, originalProduct])
 
   const handleSave = () => {
-    if (newProduct.images.length === 0) return;
+    if (newProduct.images.length === 0) return
     if (handleUpdateProductAction) {
-      handleUpdateProductAction();
+      handleUpdateProductAction()
     } else {
-      handleAddProductAction();
+      handleAddProductAction()
     }
-  };
+  }
 
-  if (!isAddingProduct) return null;
+  if (!isAddingProduct) return null
 
   return (
     <div className="space-y-6 px-6 py-6 mx-auto">
@@ -145,6 +151,20 @@ export default function ProductForm({
           />
         </div>
         <div className="space-y-3">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            {translations.title} *
+          </label>
+          <input
+            id="title"
+            type="text"
+            value={newProduct.title}
+            onChange={(e) => setNewProductAction((prev) => ({ ...prev, title: e.target.value }))}
+            className="block w-full rounded-md border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:ring-orange-600 sm:text-sm"
+            placeholder={translations.placeholderTitle}
+            required
+          />
+        </div>
+        <div className="space-y-3">
           <label htmlFor="price" className="block text-sm font-medium text-gray-700">
             {translations.price} *
           </label>
@@ -154,8 +174,8 @@ export default function ProductForm({
             inputMode="decimal"
             value={newProduct.price}
             onChange={(e) => {
-              const numericValue = e.target.value.replace(/[^0-9.]/g, "");
-              setNewProductAction((prev) => ({ ...prev, price: numericValue }));
+              const numericValue = e.target.value.replace(/[^0-9.]/g, "")
+              setNewProductAction((prev) => ({ ...prev, price: numericValue }))
             }}
             className="block w-full rounded-md border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:ring-orange-600 sm:text-sm"
             placeholder={translations.placeholderPrice}
@@ -193,9 +213,7 @@ export default function ProductForm({
       </div>
 
       <div className="space-y-3">
-        <label className="block text-sm font-medium text-gray-700">
-          {translations.images} *
-        </label>
+        <label className="block text-sm font-medium text-gray-700">{translations.images} *</label>
         <input
           type="file"
           multiple
@@ -204,7 +222,7 @@ export default function ProductForm({
           disabled={isUploading}
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed"
         />
-        
+
         {isUploading && (
           <div className="w-full space-y-2 mt-2">
             <div className="flex justify-between text-xs text-gray-500">
@@ -214,8 +232,8 @@ export default function ProductForm({
               <span>{uploadProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className="bg-orange-600 h-2.5 rounded-full transition-all duration-300" 
+              <div
+                className="bg-orange-600 h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
@@ -227,7 +245,7 @@ export default function ProductForm({
             {newProduct.images.map((img, index) => (
               <div key={index} className="relative group">
                 <Image
-                  src={img}
+                  src={img || "/placeholder.svg"}
                   alt={`Product image ${index + 1}`}
                   width={0}
                   height={0}
@@ -246,9 +264,7 @@ export default function ProductForm({
           </div>
         )}
         {newProduct.images.length === 0 && !isUploading && (
-          <p className="text-sm text-red-600 mt-2">
-            {translations.imageRequired}
-          </p>
+          <p className="text-sm text-red-600 mt-2">{translations.imageRequired}</p>
         )}
       </div>
 
@@ -287,5 +303,5 @@ export default function ProductForm({
         </button>
       </div>
     </div>
-  );
+  )
 }
