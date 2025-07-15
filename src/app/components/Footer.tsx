@@ -33,7 +33,7 @@ export default function Footer({ translations }: FooterProps) {
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Image
-              src="/Brand-Lover-Logo_1.png"
+              src="/Brand-Lover-Logo_1.jpg"
               alt="Brand Lover Logo"
               width={40}
               height={40}

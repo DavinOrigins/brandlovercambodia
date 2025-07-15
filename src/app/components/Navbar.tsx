@@ -101,7 +101,7 @@ export default function Navbar({ language, setLanguage, onSearch }: NavbarProps)
         {/* Logo & Title (Hidden on mobile when search is open) */}
         <div className={`flex items-center gap-3 ${mobileSearchOpen ? "hidden sm:flex" : ""}`}>
           <Image
-            src="/Brand-Lover-Logo_1.png"
+            src="/Brand-Lover-Logo_1.jpg"
             alt="Brand Lover Logo"
             width={40}
             height={40}
