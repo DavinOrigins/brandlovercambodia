@@ -27,7 +27,8 @@ interface ProductFormProps {
   setIsAddingProductAction: (value: boolean) => void
   handleAddProductAction: () => Promise<void>
   handleImageUploadAction: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
-  removeImageAction: (index: number) => void
+  // removeImageAction: (index: number) => void
+  removeImageAction: (index: number) => void | Promise<void>
   handleUpdateProductAction?: () => Promise<void>
   resetFormAction: () => void
   originalProduct: Product | null
@@ -253,7 +254,7 @@ export default function ProductForm({
                   style={{ aspectRatio: "4 / 3" }}
                 />
                 <button
-                  onClick={() => removeImageAction(index)}
+                  onClick={async () => await removeImageAction(index)}
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-md bg-red-600 p-1 text-white hover:bg-red-500"
                 >
                   <Trash2 className="h-4 w-4" />

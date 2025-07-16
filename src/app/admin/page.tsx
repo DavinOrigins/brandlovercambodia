@@ -286,20 +286,43 @@ export default function AdminPage() {
     resetForm();
     setNotification({ message: translations?.updateSuccess || "Product updated successfully", type: "success" });
   };
-
   const handleDeleteProductAction = async (id: string) => {
-    const { error } = await supabaseClient.from("products").delete().eq("id", id);
-    if (error) {
-      console.error("Error deleting product:", error.message);
-      setNotification({ message: `${translations?.deleteFail || "Failed to delete product:"} ${error.message}`, type: "error" });
-      return;
-    }
+  const productToDelete = products.find((p) => p.id === id);
 
-    setProducts(products.filter((p) => p.id !== id));
-    setFilteredProducts(filteredProducts.filter((p) => p.id !== id));
-    setNotification({ message: translations?.deleteSuccess || "Product deleted successfully", type: "success" });
-    setDeletePopupId(null);
-  };
+  const imageFiles = (productToDelete?.images
+  .map((url) => url.split("/").pop())
+  .filter((name): name is string => typeof name === "string")) || [];
+
+  if (imageFiles.length > 0) {
+    const { error: imageDeleteError } = await supabaseClient.storage
+      .from("product-images")
+      .remove(imageFiles);
+
+    if (imageDeleteError) {
+      console.error("Error deleting images from storage:", imageDeleteError.message);
+      setNotification({
+        message: `${translations?.deleteFail || "Failed to delete images:"} ${imageDeleteError.message}`,
+        type: "error",
+      });
+    }
+  }
+
+  const { error } = await supabaseClient.from("products").delete().eq("id", id);
+  if (error) {
+    console.error("Error deleting product:", error.message);
+    setNotification({
+      message: `${translations?.deleteFail || "Failed to delete product:"} ${error.message}`,
+      type: "error",
+    });
+    return;
+  }
+
+  setProducts(products.filter((p) => p.id !== id));
+  setFilteredProducts(filteredProducts.filter((p) => p.id !== id));
+  setNotification({ message: translations?.deleteSuccess || "Product deleted successfully", type: "success" });
+  setDeletePopupId(null);
+};
+
 
   const handleImageUploadAction = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -385,13 +408,27 @@ export default function AdminPage() {
       setTotalFiles(0);
     }
   };
+  const removeImageAction = async (index: number) => {
+  const imageUrl = newProduct.images[index];
+  const fileName = imageUrl.split("/").pop();
 
-  const removeImageAction = (index: number) => {
-    setNewProduct((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-  };
+  if (fileName) {
+    const { error } = await supabaseClient.storage
+      .from("product-images")
+      .remove([fileName]);
+
+    if (error) {
+      console.error("Failed to delete image from storage:", error.message);
+      setNotification({ message: `Image remove failed: ${error.message}`, type: "error" });
+    }
+  }
+
+  setNewProduct((prev) => ({
+    ...prev,
+    images: prev.images.filter((_, i) => i !== index),
+  }));
+};
+
 
   const startEditingAction = (product: Product) => {
     setEditingProductId(product.id);
