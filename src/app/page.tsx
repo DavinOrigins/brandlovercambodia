@@ -71,7 +71,7 @@ function ProductCard({ product, translations }: ProductCardProps) {
 
   const firstImageUrl = imageUrls?.[0] || ""
   const message = encodeURIComponent(
-    `I am interested in buying:\n\nTitle: ${product.title}\n Brand: ${product.brand}\n Model: ${product.model}\n Price: $${product.price}\n Image: ${firstImageUrl}\n\nPlease provide more details.`
+    `I am interested in buying:\n\nTitle: ${product.title}\nBrand: ${product.brand}\nModel: ${product.model}\nPrice: $${product.price}\nImage: ${firstImageUrl}\n\nPlease provide more details.`
   )
   const telegramUrl = `${product.telegram_link}?text=${message}`
 
