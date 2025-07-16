@@ -22,7 +22,9 @@
     "flexiblePayment": "灵活付款",
     "flexiblePaymentSub": "多种付款选项可用",
     "contactButton": "通过 Telegram 联系我们",
-    "copyright": "版权所有。"
+    "copyright": "版权所有。",
+    "location": "我们的位置",
+    "locationSub": "访问我们的商店"
   },
   "admin": {
     "loading": "加载中...",

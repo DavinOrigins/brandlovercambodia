@@ -22,7 +22,9 @@
     "flexiblePayment": "ការទូទាត់បត់បែន",
     "flexiblePaymentSub": "ជម្រើសច្រើនសម្រាប់អ្នក",
     "contactButton": "ទំនាក់ទំនងតាម Telegram",
-    "copyright": "រក្សាសិទ្ធិគ្រប់យ៉ាង។"
+    "copyright": "រក្សាសិទ្ធិគ្រប់យ៉ាង។",
+    "location": "ទីតាំងរបស់យើង",
+    "locationSub": "មកផ្ទាល់ហាងយើងខ្ញុំ"
   },
   "admin": {
     "loading": "កំពុងផ្ទុក...",

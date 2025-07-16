@@ -22,7 +22,9 @@
     "flexiblePayment": "Flexible Payment",
     "flexiblePaymentSub": "Multiple options available",
     "contactButton": "Contact us on Telegram",
-    "copyright": "All rights reserved."
+    "copyright": "All rights reserved.",
+    "location": "Our Location",
+    "locationSub": "Visit our shop"
   },
   "admin": {
     "loading": "Loading...",

@@ -241,7 +241,7 @@ export default function AdminPage() {
     try {
       const product: Omit<Product, "id"> = { ...newProduct }
 
-      const { data, error } = await supabaseClient.from("products").insert([product]).select()
+      const { error } = await supabaseClient.from("products").insert([product]).select()
       if (error) {
         throw error
       }

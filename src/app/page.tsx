@@ -46,15 +46,17 @@ interface Translations {
     flexiblePaymentSub: string
     contactButton: string
     copyright: string
+    location: string;
+    locationSub: string;
   }
 }
 interface ProductCardProps {
   product: Product
   translations: Translations
-  language: "en" | "kh" | "zh"
+  // language: "en" | "kh" | "zh"
 }
 
-function ProductCard({ product, translations, language }: ProductCardProps) {
+function ProductCard({ product, translations }: ProductCardProps) {
   const handleBuyNow = () => {
     const message = encodeURIComponent(
       `I am interested in buying the ${product.title} ${product.brand} ${product.model} for ${product.price}. Please provide more details.`
@@ -219,7 +221,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-center uppercase mb-12 text-gray-900">{translations.featured}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} language={language} translations={translations} />
+                <ProductCard key={product.id} product={product} translations={translations} />
               ))}
             </div>
           </div>
@@ -259,7 +261,7 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayProducts.map((product) => (
-                <ProductCard key={product.id} product={product} language={language} translations={translations} />
+                <ProductCard key={product.id} product={product} translations={translations} />
               ))}
             </div>
           )}
@@ -270,3 +272,4 @@ export default function HomePage() {
     </div>
   )
 }
+
