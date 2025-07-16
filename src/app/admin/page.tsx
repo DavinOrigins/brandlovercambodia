@@ -246,8 +246,8 @@ export default function AdminPage() {
         throw error
       }
 
-      setProducts([data[0], ...products])
-      setFilteredProducts([data[0], ...filteredProducts])
+      // setProducts([data[0], ...products])
+      // setFilteredProducts([data[0], ...filteredProducts])
       setTemporaryImages([]) // Clear temporary images after successful save
       resetForm()
       setNotification({ message: translations?.addSuccess || "Product added successfully", type: "success" })
