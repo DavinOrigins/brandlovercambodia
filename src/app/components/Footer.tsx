@@ -1,5 +1,4 @@
 
-
 // "use client";
 
 // import Image from "next/image";
@@ -78,61 +77,66 @@
 //         </div>
 
 //         {/* Contact and social */}
-//         <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-800 pt-6">
-//           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-//             © {new Date().getFullYear()} Brand Lover. {t.copyright}
-//           </p>
+//         <div className="border-t border-gray-800 pt-6">
+//           {/* Main row with three equal sections */}
+//           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+//             {/* Copyright - left-aligned */}
+//             <div className="w-full md:w-auto text-center md:text-left">
+//               <p className="text-gray-400 text-sm">
+//                 © {new Date().getFullYear()} Brand Lover. {t.copyright}
+//               </p>
+//             </div>
 
-//            {/* Centered Google link */}
-//           <div className="mb-4 md:mb-0">
-//             <a
-//               href="https://www.google.com"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-white hover:text-[#fcac4c] transition font-medium"
-//             >
-//               {t.location}
-//             </a>
-//           </div>
+//             {/* Location link - centered */}
+//             <div className="w-full md:w-auto text-center">
+//               <a
+//                 onClick={handleMapClick}
+//                 className="text-white hover:text-[#fcac4c] transition font-medium cursor-pointer"
+//               >
+//                 {t.location}
+//               </a>
+//               <p className="text-gray-400 text-xs mt-1">{t.locationSub}</p>
+//             </div>
 
-//           {/* Social media icons */}
-//           <div className="flex gap-4">
-//             <a
-//               href="https://t.me/brandlover88"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-white hover:text-[#fcac4c] transition"
-//               aria-label="Telegram"
-//             >
-//               <FaTelegramPlane className="w-5 h-5" />
-//             </a>
-//             <a
-//               href="https://facebook.com/brandlover89"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-white hover:text-[#fcac4c] transition"
-//               aria-label="Facebook"
-//             >
-//               <FaFacebookF className="w-5 h-5" />
-//             </a>
-//             <a
-//               href="https://www.instagram.com/brandlover16"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-white hover:text-[#fcac4c] transition"
-//               aria-label="Instagram"
-//             >
-//               <FaInstagram className="w-5 h-5" />
-//             </a>
-//             <a
-//               href="https://www.tiktok.com/@brandlover89"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-white hover:text-[#fcac4c] transition"
-//               aria-label="TikTok"
-//             >
-//               <FaTiktok className="w-5 h-5" />
-//             </a>
+//             {/* Social icons - right-aligned */}
+//             <div className="w-full md:w-auto flex justify-center md:justify-end gap-4">
+//               <a
+//                 href="https://t.me/brandlover88"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-white hover:text-[#fcac4c] transition"
+//                 aria-label="Telegram"
+//               >
+//                 <FaTelegramPlane className="w-5 h-5" />
+//               </a>
+//               <a
+//                 href="https://facebook.com/brandlover89"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-white hover:text-[#fcac4c] transition"
+//                 aria-label="Facebook"
+//               >
+//                 <FaFacebookF className="w-5 h-5" />
+//               </a>
+//               <a
+//                 href="https://www.instagram.com/brandlover16"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-white hover:text-[#fcac4c] transition"
+//                 aria-label="Instagram"
+//               >
+//                 <FaInstagram className="w-5 h-5" />
+//               </a>
+//               <a
+//                 href="https://www.tiktok.com/@brandlover89"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-white hover:text-[#fcac4c] transition"
+//                 aria-label="TikTok"
+//               >
+//                 <FaTiktok className="w-5 h-5" />
+//               </a>
+//             </div>
 //           </div>
 //         </div>
 //       </div>
@@ -140,10 +144,11 @@
 //   );
 // }
 
+
 "use client";
 
 import Image from "next/image";
-import { CreditCard, Car, Settings, Shield } from "lucide-react";
+import { CreditCard, Car, Settings, Shield, MapPin } from "lucide-react";
 import { FaTelegramPlane, FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 import { ReactNode } from "react";
 
@@ -171,8 +176,7 @@ export default function Footer({ translations }: FooterProps) {
   const t = translations.footer;
 
   const handleMapClick = () => {
-    // Open Google Maps with your location
-    window.open("https://maps.google.com/?q=Your+Shop+Address", "_blank");
+    window.open("https://maps.app.goo.gl/Ts2DZ24BzEkfUbZq5", "_blank");
   };
 
   return (
@@ -217,26 +221,26 @@ export default function Footer({ translations }: FooterProps) {
           </div>
         </div>
 
+        {/* Centered Location Button */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={handleMapClick}
+            className="flex items-center gap-2 bg-[#fcac4c] hover:bg-[#e69c3c] text-black font-medium py-2 px-4 rounded-full transition-colors"
+          >
+            <MapPin className="w-5 h-5" />
+            {t.location}
+          </button>
+        </div>
+        <p className="text-gray-400 text-xs text-center mb-6">{t.locationSub}</p>
+
         {/* Contact and social */}
         <div className="border-t border-gray-800 pt-6">
-          {/* Main row with three equal sections */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright - left-aligned */}
             <div className="w-full md:w-auto text-center md:text-left">
               <p className="text-gray-400 text-sm">
                 © {new Date().getFullYear()} Brand Lover. {t.copyright}
               </p>
-            </div>
-
-            {/* Location link - centered */}
-            <div className="w-full md:w-auto text-center">
-              <a
-                onClick={handleMapClick}
-                className="text-white hover:text-[#fcac4c] transition font-medium cursor-pointer"
-              >
-                {t.location}
-              </a>
-              <p className="text-gray-400 text-xs mt-1">{t.locationSub}</p>
             </div>
 
             {/* Social icons - right-aligned */}
