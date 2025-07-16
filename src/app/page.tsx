@@ -13,7 +13,6 @@ import ProductCarousel from "./components/section/ProductCarousel"
 import TextSlideshow from "@/app/components/ui/text-span"
 
 interface Product {
-  imageUrls: any
   id: string
   brand: string
   model: string
@@ -70,7 +69,7 @@ function ProductCard({ product, translations }: ProductCardProps) {
     return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${image}`;
   }) || [];
 
-  const firstImageUrl = product.imageUrls?.[0] || ""
+  const firstImageUrl = imageUrls?.[0] || ""
   const message = encodeURIComponent(
     `I am interested in buying:\n\n ${product.title} - ${product.brand} - ${product.model}\n Price: $${product.price}\n Image: ${firstImageUrl}\n\nPlease provide more details.`
   )
