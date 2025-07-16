@@ -48,13 +48,20 @@ interface Translations {
     copyright: string
   }
 }
+interface ProductCardProps {
+  product: Product
+  translations: Translations
+  language: "en" | "kh" | "zh"
+}
 
-function ProductCard({ product, translations }: { product: Product; language: string; translations: Translations }) {
+function ProductCard({ product, translations, language }: ProductCardProps) {
   const handleBuyNow = () => {
     const message = encodeURIComponent(
-      `I'm interested in buying the ${product.title} (${product.brand} ${product.model}) for ${product.price}. Please provide more details.`,
+      `I am interested in buying the ${product.title} ${product.brand} ${product.model} for ${product.price}. Please provide more details.`
     )
-    window.open(`${product.telegram_link}?text=${message}`, "_blank")
+    // Open Telegram share link with prefilled text
+    const telegramShareUrl = `https://t.me/share/url?url=&text=${message}`
+    window.open(telegramShareUrl, "_blank")
   }
 
   return (
@@ -191,7 +198,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center space-y-6">
           <h2 className="text-4xl text-[#fcac4c] md:text-6xl font-bold">{translations.heading}</h2>
 
-          <p className="text-xl text-gray-900 md:text-2xl">{translations.subheading}</p>
+          <p className="text-xl text-gray-600 md:text-2xl">{translations.subheading}</p>
 
           <div className="flex flex-nowrap justify-center gap-4 overflow-x-auto scrollbar-hide">
             {translations.features.map((feature, idx) => (
