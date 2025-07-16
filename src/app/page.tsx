@@ -13,6 +13,7 @@ import ProductCarousel from "./components/section/ProductCarousel"
 import TextSlideshow from "@/app/components/ui/text-span"
 
 interface Product {
+  imageUrls: any
   id: string
   brand: string
   model: string
@@ -56,71 +57,20 @@ interface ProductCardProps {
   // language: "en" | "kh" | "zh"
 }
 
-// function ProductCard({ product, translations }: ProductCardProps) {
-//   const message = encodeURIComponent(
-//     `I am interested in buying the ${product.title} ${product.brand} ${product.model} for $${product.price}. Please provide more details.`
-//   )
-//   const telegramUrl = `${product.telegram_link}?text=${message}`
-
-//   return (
-//     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
-//       <div className="p-4">
-//         <ProductCarousel
-//           images={product.images}
-//           translations={{
-//             noImages: "No images",
-//             prevImage: "Previous image",
-//             nextImage: "Next image",
-//           }}
-//         />
-
-//         <div className="mt-4 space-y-2">
-//           <div className="flex items-center justify-between">
-//             <span className="text-xs bg-gray-50 text-gray-600 px-2 py-1 uppercase rounded ring-1 ring-inset ring-gray-500/10">
-//               {product.brand}
-//             </span>
-//             {product.featured && (
-//               <span className="text-xs bg-yellow-50 text-yellow-800 px-2 py-1 rounded ring-1 ring-inset ring-yellow-600/20 flex items-center">
-//                 <Star className="w-3 h-3 mr-1" /> Featured
-//               </span>
-//             )}
-//           </div>
-
-//           {/* Title with TextSlideshow */}
-//           <div className="w-full min-h-[1.75rem]">
-//             <TextSlideshow text={product.title} className="font-semibold text-lg text-gray-900" lineClamp={1} />
-//           </div>
-
-//           <p className="text-sm text-gray-600 line-clamp-1">{product.model}</p>
-
-//           {/* Description with TextSlideshow */}
-//           <div className="w-full min-h-[2.5rem]">
-//             <TextSlideshow text={product.description} className="text-sm text-gray-600" lineClamp={2} />
-//           </div>
-
-//           <div className="flex items-center justify-between pt-2">
-//             <span className="text-2xl font-bold text-[#fcac4c]">
-//               ${Number(product.price).toLocaleString()}
-//             </span>
-
-//             <a
-//               href={telegramUrl}
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="bg-[#fcac4c] text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-orange-600 inline-flex items-center gap-1"
-//             >
-//               <MessageCircle className="w-4 h-4" />
-//               {translations.buyNow}
-//             </a>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
 
 function ProductCard({ product, translations }: ProductCardProps) {
-  const firstImageUrl = product.images?.[0] || ""
+
+    // Get public URLs for all images
+  const imageUrls = product.images?.map(image => {
+    // If the image is already a full URL, use it as-is
+    if (image.startsWith('http')) return image;
+    
+    // If it's a Supabase storage path, construct the public URL
+    // Replace 'your-bucket-name' with your actual Supabase bucket name
+    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${image}`;
+  }) || [];
+
+  const firstImageUrl = product.imageUrls?.[0] || ""
   const message = encodeURIComponent(
     `I am interested in buying:\n\n ${product.title} - ${product.brand} - ${product.model}\n Price: $${product.price}\n Image: ${firstImageUrl}\n\nPlease provide more details.`
   )
