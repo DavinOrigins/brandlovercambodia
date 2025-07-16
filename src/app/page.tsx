@@ -1,5 +1,6 @@
 
 
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -9,13 +10,13 @@ import Navbar from "@/app/components/Navbar"
 import TitleSlideShow from "./components/title-slideshow"
 import Footer from "./components/Footer"
 import ProductCarousel from "./components/section/ProductCarousel"
-import HoverDescription from "./components/section/HoverDescription"
+import TextSlideshow from "@/app/components/ui/text-span"
 
 interface Product {
   id: string
   brand: string
   model: string
-  title: string // Added title field
+  title: string
   images: string[]
   price: string
   description: string
@@ -78,9 +79,23 @@ function ProductCard({ product, translations }: { product: Product; language: st
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-lg text-gray-900">{product.title}</h3> {/* Display product title */}
-          <p className="text-sm text-gray-600">{product.model}</p> {/* Keep model as a subtitle */}
-          <HoverDescription description={product.description} />
+
+          {/* Title with TextSlideshow - properly contained */}
+          <div className="w-full min-h-[1.75rem]">
+            {" "}
+            {/* Fixed height container for title */}
+            <TextSlideshow text={product.title} className="font-semibold text-lg text-gray-900" lineClamp={1} />
+          </div>
+
+          <p className="text-sm text-gray-600 line-clamp-1">{product.model}</p>
+
+          {/* Description with TextSlideshow - properly contained */}
+          <div className="w-full min-h-[2.5rem]">
+            {" "}
+            {/* Fixed height container for description */}
+            <TextSlideshow text={product.description} className="text-sm text-gray-600" lineClamp={2} />
+          </div>
+
           <div className="flex items-center justify-between pt-2">
             <span className="text-2xl font-bold text-[#fcac4c]">${Number(product.price).toLocaleString()}</span>
             <button
@@ -147,7 +162,7 @@ export default function HomePage() {
       (product) =>
         product.brand.toLowerCase().includes(lowerQuery) ||
         product.model.toLowerCase().includes(lowerQuery) ||
-        product.title.toLowerCase().includes(lowerQuery) || // Search by title
+        product.title.toLowerCase().includes(lowerQuery) ||
         product.price.toLowerCase().includes(lowerQuery),
     )
     setFilteredProducts(filtered)

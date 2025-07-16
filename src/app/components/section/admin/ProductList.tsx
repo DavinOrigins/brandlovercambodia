@@ -6,7 +6,7 @@
 import { motion } from "framer-motion"
 import { Star, Edit, Trash2 } from "lucide-react"
 import ProductCarousel from "../ProductCarousel"
-import HoverDescription from "../HoverDescription"
+import TextSlideshow from "../../ui/text-span"
 
 interface Product {
   id: string
@@ -73,9 +73,20 @@ export default function ProductList({ products, startEditingAction, showDeletePo
                   </span>
                 )}
               </div>
-              <h4 className="text-lg font-semibold text-gray-900">{product.title}</h4> {/* Display title */}
-              <p className="text-sm text-gray-600 mb-2">{product.model}</p> {/* Model can be smaller */}
-              <HoverDescription description={product.description} />
+              <div className="w-full min-h-[1.75rem]">
+                {" "}
+                {/* Fixed height container for title */}
+                <TextSlideshow text={product.title} className="font-semibold text-lg text-gray-900" lineClamp={1} />
+              </div>
+
+              <p className="text-sm text-gray-600 line-clamp-1">{product.model}</p>
+
+              {/* Description with TextSlideshow - properly contained */}
+              <div className="w-full min-h-[2.5rem]">
+                {" "}
+                {/* Fixed height container for description */}
+                <TextSlideshow text={product.description} className="text-sm text-gray-600" lineClamp={2} />
+              </div>
               <div className="mt-2 text-[#fcac4c] font-semibold">${Number(product.price).toLocaleString()}</div>
               <div className="mt-4 flex gap-2">
                 <motion.button

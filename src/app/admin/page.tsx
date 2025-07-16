@@ -3,7 +3,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import imageCompression from "browser-image-compression"
@@ -19,13 +18,13 @@ interface Product {
   id: string
   brand: string
   model: string
-  title: string // Added title field
+  title: string
   images: string[]
   price: string
   description: string
   telegram_link: string
   featured: boolean
-  created_at: string // Ensure created_at is here
+  created_at: string
 }
 
 interface AdminTranslations {
@@ -54,7 +53,7 @@ interface AdminTranslations {
   updateProduct: string
   brand: string
   model: string
-  title: string // Added title translation key
+  title: string
   price: string
   telegramLink: string
   description: string
@@ -70,12 +69,11 @@ interface AdminTranslations {
   update: string
   placeholderBrand: string
   placeholderModel: string
-  placeholderTitle: string // Added placeholder title translation key
+  placeholderTitle: string
   placeholderPrice: string
   placeholderTelegram: string
   placeholderDescription: string
 }
-
 export default function AdminPage() {
   const router = useRouter()
   const [language, setLanguage] = useState<"en" | "kh" | "zh">("en")
@@ -87,15 +85,15 @@ export default function AdminPage() {
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     brand: "",
     model: "",
-    title: "", // Initialize new product with empty title
+    title: "",
     images: [],
     price: "",
     description: "",
     telegram_link: "https://t.me/brandlover88",
     featured: false,
-    created_at: new Date().toISOString(), // Initialize created_at
+    created_at: new Date().toISOString(),
   })
-  const [temporaryImages, setTemporaryImages] = useState<string[]>([]) // Track images not yet saved
+  const [temporaryImages, setTemporaryImages] = useState<string[]>([])
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null)
   const [editingProductId, setEditingProductId] = useState<string | null>(null)
   const [deletePopupId, setDeletePopupId] = useState<string | null>(null)
@@ -117,7 +115,6 @@ export default function AdminPage() {
     }
     fetchTranslations()
   }, [language])
-
   useEffect(() => {
     const checkAuth = async () => {
       const {
@@ -155,6 +152,7 @@ export default function AdminPage() {
       await fetchProducts()
       setIsLoading(false)
     }
+
     initialize()
 
     const {
@@ -189,41 +187,14 @@ export default function AdminPage() {
       authSubscription?.unsubscribe()
       productSubscription.unsubscribe()
     }
-  }, [router, translations]) // ✅ ADD translations HERE
-
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => setNotification(null), 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [notification])
-
-  const cleanupTemporaryImages = async (imageUrls: string[]) => {
-    if (imageUrls.length === 0) return
-
-    try {
-      const filePaths = imageUrls.map((url) => {
-        const pathStart = url.indexOf("/product-images/") + "/product-images/".length
-        return decodeURIComponent(url.substring(pathStart))
-      })
-
-      const { error } = await supabaseClient.storage.from("product-images").remove(filePaths)
-
-      if (error) {
-        console.error("Error cleaning up temporary images:", error.message)
-      }
-    } catch (error) {
-      console.error("Unexpected error cleaning up images:", error)
-    }
-  }
-
+  }, [router, translations])
   const handleSearch = (query: string) => {
     const lowerQuery = query.toLowerCase()
     const filtered = products.filter(
       (product) =>
         product.brand.toLowerCase().includes(lowerQuery) ||
         product.model.toLowerCase().includes(lowerQuery) ||
-        product.title.toLowerCase().includes(lowerQuery) || // Added title to search
+        product.title.toLowerCase().includes(lowerQuery) ||
         product.price.toLowerCase().includes(lowerQuery),
     )
     setFilteredProducts(filtered)
@@ -288,12 +259,11 @@ export default function AdminPage() {
       })
     }
   }
-
   const handleUpdateProductAction = async () => {
     if (
       !newProduct.brand ||
       !newProduct.model ||
-      !newProduct.title || // Added title to validation
+      !newProduct.title ||
       !newProduct.price ||
       newProduct.images.length === 0 ||
       !editingProductId
@@ -312,48 +282,44 @@ export default function AdminPage() {
     }
 
     try {
-      // 1. Detect removed images
+      // Detect removed images
       const removedImages = existingProduct.images.filter((img) => !newProduct.images.includes(img))
 
-      // 2. Prepare paths from public URLs
+      // Prepare file paths for removal
       const filePathsToDelete = removedImages.map((url) => {
         const pathStart = url.indexOf("/product-images/") + "/product-images/".length
         return decodeURIComponent(url.substring(pathStart))
       })
 
-      // 3. Delete removed images from storage
+      // Delete removed images from storage
       if (filePathsToDelete.length > 0) {
         const { error: deleteError } = await supabaseClient.storage.from("product-images").remove(filePathsToDelete)
-
         if (deleteError) {
           console.error("Error deleting removed images:", deleteError.message)
-          // Continue with update even if image deletion fails
+          // Continue update anyway
         }
       }
 
-      // 4. Proceed with DB update
+      // Update database record
       const updatedData: Partial<Product> = {
         brand: newProduct.brand,
         model: newProduct.model,
-        title: newProduct.title, // Added title to updated data
+        title: newProduct.title,
         images: newProduct.images,
         price: newProduct.price,
         description: newProduct.description,
         telegram_link: newProduct.telegram_link,
         featured: newProduct.featured,
-        created_at: newProduct.created_at, // Ensure created_at is passed
+        created_at: newProduct.created_at,
       }
 
       const { error } = await supabaseClient.from("products").update(updatedData).eq("id", editingProductId)
 
-      if (error) {
-        throw error
-      }
+      if (error) throw error
 
-      // 5. Update local state
       setProducts((prev) => prev.map((p) => (p.id === editingProductId ? { ...p, ...updatedData } : p)))
       setFilteredProducts((prev) => prev.map((p) => (p.id === editingProductId ? { ...p, ...updatedData } : p)))
-      setTemporaryImages([]) // Clear temporary images after successful update
+      setTemporaryImages([])
       resetForm()
       setNotification({
         message: translations?.updateSuccess || "Product updated successfully",
@@ -373,26 +339,22 @@ export default function AdminPage() {
     if (!productToDelete) return
 
     try {
-      // Extract file paths from public URLs
+      // Extract file paths from image URLs
       const filePaths = productToDelete.images.map((url) => {
         const pathStart = url.indexOf("/product-images/") + "/product-images/".length
         return decodeURIComponent(url.substring(pathStart))
       })
 
-      // Delete from Supabase Storage
+      // Delete images from storage
       const { error: storageError } = await supabaseClient.storage.from("product-images").remove(filePaths)
-
       if (storageError) {
         console.error("Storage delete error:", storageError.message)
-        // Continue with DB deletion even if storage deletion fails
+        // Proceed with DB deletion anyway
       }
 
-      // Delete from database
+      // Delete product record
       const { error: dbError } = await supabaseClient.from("products").delete().eq("id", id)
-
-      if (dbError) {
-        throw dbError
-      }
+      if (dbError) throw dbError
 
       setProducts(products.filter((p) => p.id !== id))
       setFilteredProducts(filteredProducts.filter((p) => p.id !== id))
@@ -474,7 +436,6 @@ export default function AdminPage() {
         uploadedImages.push(data.publicUrl)
       }
 
-      // Update both the product images and temporary images
       setNewProduct((prev) => ({
         ...prev,
         images: [...prev.images, ...uploadedImages],
@@ -486,7 +447,7 @@ export default function AdminPage() {
         message: `${translations?.uploadFail || "Failed to upload image:"} ${error instanceof Error ? error.message : String(error)}`,
         type: "error",
       })
-      // Clean up any partially uploaded images
+
       if (uploadedImages.length > 0) {
         await cleanupTemporaryImages(uploadedImages)
       }
@@ -495,6 +456,24 @@ export default function AdminPage() {
       setUploadProgress(0)
       setCurrentFileIndex(0)
       setTotalFiles(0)
+    }
+  }
+  const cleanupTemporaryImages = async (imageUrls: string[]) => {
+    if (imageUrls.length === 0) return
+
+    try {
+      const filePaths = imageUrls.map((url) => {
+        const pathStart = url.indexOf("/product-images/") + "/product-images/".length
+        return decodeURIComponent(url.substring(pathStart))
+      })
+
+      const { error } = await supabaseClient.storage.from("product-images").remove(filePaths)
+
+      if (error) {
+        console.error("Error cleaning up temporary images:", error.message)
+      }
+    } catch (error) {
+      console.error("Unexpected error cleaning up images:", error)
     }
   }
 
@@ -521,14 +500,13 @@ export default function AdminPage() {
     setEditingProductId(product.id)
     setNewProduct({ ...product })
     setIsAddingProduct(true)
-    setTemporaryImages([]) // Clear any temporary images when starting to edit
+    setTemporaryImages([]) // Clear temporary images when editing
     if (productFormRef.current) {
       productFormRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
     }
   }
 
   const resetForm = async () => {
-    // Clean up any temporary images before resetting
     if (temporaryImages.length > 0) {
       await cleanupTemporaryImages(temporaryImages)
     }
@@ -536,13 +514,13 @@ export default function AdminPage() {
     setNewProduct({
       brand: "",
       model: "",
-      title: "", // Reset title field
+      title: "",
       images: [],
       price: "",
       description: "",
       telegram_link: "https://t.me/brandlover88",
       featured: false,
-      created_at: new Date().toISOString(), // Reset created_at
+      created_at: new Date().toISOString(),
     })
     setTemporaryImages([])
     setIsAddingProduct(false)
@@ -628,7 +606,7 @@ export default function AdminPage() {
               updateProduct: translations.updateProduct,
               brand: translations.brand,
               model: translations.model,
-              title: translations.title, // Pass title translation
+              title: translations.title,
               price: translations.price,
               telegramLink: translations.telegramLink,
               description: translations.description,
@@ -640,7 +618,7 @@ export default function AdminPage() {
               cancel: translations.cancel,
               placeholderBrand: translations.placeholderBrand,
               placeholderModel: translations.placeholderModel,
-              placeholderTitle: translations.placeholderTitle, // Pass placeholder title translation
+              placeholderTitle: translations.placeholderTitle,
               placeholderPrice: translations.placeholderPrice,
               placeholderTelegram: translations.placeholderTelegram,
               placeholderDescription: translations.placeholderDescription,
