@@ -58,13 +58,15 @@ interface ProductCardProps {
 
 function ProductCard({ product, translations }: ProductCardProps) {
   const handleBuyNow = () => {
-    const message = encodeURIComponent(
-      `I am interested in buying the ${product.title} ${product.brand} ${product.model} for ${product.price}. Please provide more details.`
-    )
-    // Open Telegram share link with prefilled text
-    const telegramShareUrl = `https://t.me/share/url?url=&text=${message}`
-    window.open(telegramShareUrl, "_blank")
-  }
+  const message = encodeURIComponent(
+    `I am interested in buying the ${product.title} ${product.brand} ${product.model} for ${product.price}. Please provide more details.`
+  )
+
+  // Append message to seller's telegram link (must be a t.me/username format)
+  const telegramUrl = `${product.telegram_link}?text=${message}`
+
+  window.open(telegramUrl, "_blank")
+}
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">

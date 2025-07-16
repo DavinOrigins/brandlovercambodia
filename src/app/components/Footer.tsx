@@ -5,10 +5,12 @@
 // import Image from "next/image";
 // import { CreditCard, Car, Settings, Shield } from "lucide-react";
 // import { FaTelegramPlane, FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
+// import { ReactNode } from "react";
 
 // interface FooterProps {
 //   translations: {
 //     footer: {
+//       location: ReactNode;
 //       description: string;
 //       customDesign: string;
 //       customDesignSub: string;
@@ -20,12 +22,18 @@
 //       flexiblePaymentSub: string;
 //       contactButton: string;
 //       copyright: string;
+//       locationSub: string;
 //     };
 //   };
 // }
 
 // export default function Footer({ translations }: FooterProps) {
 //   const t = translations.footer;
+
+//   const handleMapClick = () => {
+//     // Open Google Maps with your location
+//     window.open("https://maps.google.com/?q=Your+Shop+Address", "_blank");
+//   };
 
 //   return (
 //     <footer className="bg-black text-white pt-12 pb-6">
@@ -75,6 +83,18 @@
 //             © {new Date().getFullYear()} Brand Lover. {t.copyright}
 //           </p>
 
+//            {/* Centered Google link */}
+//           <div className="mb-4 md:mb-0">
+//             <a
+//               href="https://www.google.com"
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="text-white hover:text-[#fcac4c] transition font-medium"
+//             >
+//               {t.location}
+//             </a>
+//           </div>
+
 //           {/* Social media icons */}
 //           <div className="flex gap-4">
 //             <a
@@ -120,18 +140,17 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import Image from "next/image";
-import { CreditCard, Car, Settings, Shield, MapPin } from "lucide-react";
+import { CreditCard, Car, Settings, Shield } from "lucide-react";
 import { FaTelegramPlane, FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
+import { ReactNode } from "react";
 
 interface FooterProps {
   translations: {
     footer: {
+      location: ReactNode;
       description: string;
       customDesign: string;
       customDesignSub: string;
@@ -143,7 +162,6 @@ interface FooterProps {
       flexiblePaymentSub: string;
       contactButton: string;
       copyright: string;
-      location: string;
       locationSub: string;
     };
   };
@@ -154,7 +172,7 @@ export default function Footer({ translations }: FooterProps) {
 
   const handleMapClick = () => {
     // Open Google Maps with your location
-    window.open("https://maps.app.goo.gl/Ts2DZ24BzEkfUbZq5", "_blank");
+    window.open("https://maps.google.com/?q=Your+Shop+Address", "_blank");
   };
 
   return (
@@ -175,8 +193,8 @@ export default function Footer({ translations }: FooterProps) {
           <p className="text-gray-400 max-w-md text-center">{t.description}</p>
         </div>
 
-        {/* Store features - now 5 columns with map */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
+        {/* Store features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           <div className="flex flex-col items-center text-center">
             <Car className="w-8 h-8 mb-2 text-[#fcac4c]" />
             <h3 className="font-semibold mb-1">{t.customDesign}</h3>
@@ -197,60 +215,69 @@ export default function Footer({ translations }: FooterProps) {
             <h3 className="font-semibold mb-1">{t.flexiblePayment}</h3>
             <p className="text-sm text-gray-400">{t.flexiblePaymentSub}</p>
           </div>
-          <div 
-            className="flex flex-col items-center text-center cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={handleMapClick}
-          >
-            <MapPin className="w-8 h-8 mb-2 text-[#fcac4c]" />
-            <h3 className="font-semibold mb-1">{t.location}</h3>
-            <p className="text-sm text-gray-400">{t.locationSub}</p>
-          </div>
         </div>
 
         {/* Contact and social */}
-        <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-800 pt-6">
-          <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © {new Date().getFullYear()} Brand Lover. {t.copyright}
-          </p>
+        <div className="border-t border-gray-800 pt-6">
+          {/* Main row with three equal sections */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+            {/* Copyright - left-aligned */}
+            <div className="w-full md:w-auto text-center md:text-left">
+              <p className="text-gray-400 text-sm">
+                © {new Date().getFullYear()} Brand Lover. {t.copyright}
+              </p>
+            </div>
 
-          {/* Social media icons */}
-          <div className="flex gap-4">
-            <a
-              href="https://t.me/brandlover88"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-[#fcac4c] transition"
-              aria-label="Telegram"
-            >
-              <FaTelegramPlane className="w-5 h-5" />
-            </a>
-            <a
-              href="https://facebook.com/brandlover89"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-[#fcac4c] transition"
-              aria-label="Facebook"
-            >
-              <FaFacebookF className="w-5 h-5" />
-            </a>
-            <a
-              href="https://www.instagram.com/brandlover16"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-[#fcac4c] transition"
-              aria-label="Instagram"
-            >
-              <FaInstagram className="w-5 h-5" />
-            </a>
-            <a
-              href="https://www.tiktok.com/@brandlover89"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-[#fcac4c] transition"
-              aria-label="TikTok"
-            >
-              <FaTiktok className="w-5 h-5" />
-            </a>
+            {/* Location link - centered */}
+            <div className="w-full md:w-auto text-center">
+              <a
+                onClick={handleMapClick}
+                className="text-white hover:text-[#fcac4c] transition font-medium cursor-pointer"
+              >
+                {t.location}
+              </a>
+              <p className="text-gray-400 text-xs mt-1">{t.locationSub}</p>
+            </div>
+
+            {/* Social icons - right-aligned */}
+            <div className="w-full md:w-auto flex justify-center md:justify-end gap-4">
+              <a
+                href="https://t.me/brandlover88"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#fcac4c] transition"
+                aria-label="Telegram"
+              >
+                <FaTelegramPlane className="w-5 h-5" />
+              </a>
+              <a
+                href="https://facebook.com/brandlover89"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#fcac4c] transition"
+                aria-label="Facebook"
+              >
+                <FaFacebookF className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.instagram.com/brandlover16"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#fcac4c] transition"
+                aria-label="Instagram"
+              >
+                <FaInstagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@brandlover89"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#fcac4c] transition"
+                aria-label="TikTok"
+              >
+                <FaTiktok className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
