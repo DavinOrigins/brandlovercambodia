@@ -18,7 +18,6 @@ interface Product {
   description: string
   telegram_link: string
   featured: boolean
-  created_at: string // Added created_at to match app/admin/page.tsx
 }
 
 interface ProductFormProps {

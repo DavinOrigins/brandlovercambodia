@@ -22,7 +22,6 @@ interface Product {
   description: string;
   telegram_link: string;
   featured: boolean;
-  created_at: string; // 👈 ADD THIS LINE
 }
 
 interface AdminTranslations {
@@ -90,7 +89,6 @@ export default function AdminPage() {
     description: "",
     telegram_link: "https://t.me/brandlover88",
     featured: false,
-    created_at: "", // 👈 Add this line
   });
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
@@ -414,7 +412,6 @@ export default function AdminPage() {
       description: "",
       telegram_link: "https://t.me/brandlover88",
       featured: false,
-      created_at: "", // 👈 Add this line
     });
     setIsAddingProduct(false);
     setEditingProductId(null);
